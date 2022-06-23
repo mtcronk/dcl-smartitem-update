@@ -63,10 +63,6 @@ script2.init()
 script1.spawn(signpostRoot, {"text":"Walk this way","fontSize":20}, createChannel(channelId, signpostRoot, channelBus))
 script2.spawn(triggerArea, {"enabled":true,"onEnter":[{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"Hi there!"}}],"onLeave":[{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"Leaving so soon?"}}]}, createChannel(channelId, triggerArea, channelBus))
 
-//
-// HELP!
-//
-
 async function checkTime() {
 
   // Fetch and log date to JavaScript console in browser developer tools
@@ -75,6 +71,41 @@ async function checkTime() {
   )
   const toDate = new Date(json.datetime)
   log('Date: ' + toDate)
+
+  //
+  // HELP!
+  //
+  // I'm trying to update the text in the signpost to simply say "WOW!"
+  // every time the date/time is fetched.
+  //
+
+  //
+  // Strategy 1
+  //
+  // Update the component directly, however it yields the error caught below
+  //
+
+  try {
+    let textComponent = signpostRoot.getComponent(TextShape)
+    textComponent.value = 'WOW!'
+  } catch (error) {
+    // Can not get component "engine.text" from entity "signpostRoot"
+    log('Caught error')
+    log(error.message)
+  }
+
+  //
+  // Strategy 2
+  //
+  // Send message to channelBus, but I'm not sure how to do this.
+  //
+
+  //
+  // Strategy 3
+  //
+  // Is there another way altogether?
+  //
+
 }
 
 // Dummy entity to run the checkTime() function once every 5 seconds
