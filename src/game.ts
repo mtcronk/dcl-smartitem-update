@@ -2,6 +2,7 @@ import { createChannel } from '../node_modules/decentraland-builder-scripts/chan
 import { createInventory } from '../node_modules/decentraland-builder-scripts/inventory'
 import Script1 from "../3f3fe65b-c648-44bc-8781-c2a40bc95bb4/src/item"
 import Script2 from "../1ab2733f-1782-4521-9eda-6aa8ad684277/src/item"
+import * as utils from '@dcl/ecs-scene-utils'
 
 const _scene = new Entity('_scene')
 engine.addEntity(_scene)
@@ -54,7 +55,10 @@ const options = { inventory }
 
 const script1 = new Script1()
 const script2 = new Script2()
-script1.init(options)
-script2.init(options)
+// Builder creates this but causes an error as no arguments expected!
+//script1.init(options)
+//script2.init(options)
+script1.init()
+script2.init()
 script1.spawn(signpostRoot, {"text":"Walk this way","fontSize":20}, createChannel(channelId, signpostRoot, channelBus))
 script2.spawn(triggerArea, {"enabled":true,"onEnter":[{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"Hi there!"}}],"onLeave":[{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"Leaving so soon?"}}]}, createChannel(channelId, triggerArea, channelBus))
