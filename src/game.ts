@@ -62,3 +62,27 @@ script1.init()
 script2.init()
 script1.spawn(signpostRoot, {"text":"Walk this way","fontSize":20}, createChannel(channelId, signpostRoot, channelBus))
 script2.spawn(triggerArea, {"enabled":true,"onEnter":[{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"Hi there!"}}],"onLeave":[{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"Leaving so soon?"}}]}, createChannel(channelId, triggerArea, channelBus))
+
+//
+// HELP!
+//
+
+async function checkTime() {
+
+  // Fetch and log date to JavaScript console in browser developer tools
+  const json = await utils.sendRequest(
+    'https://worldtimeapi.org/api/timezone/etc/gmt+3'
+  )
+  const toDate = new Date(json.datetime)
+  log('Date: ' + toDate)
+}
+
+// Dummy entity to run the checkTime() function once every 5 seconds
+const checkTimeEntity = new Entity()
+engine.addEntity(checkTimeEntity)
+checkTimeEntity.addComponent(
+  new utils.Interval(5000, () => {
+    checkTime().catch((error) => log(error))
+  })
+)
+
