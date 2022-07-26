@@ -53,6 +53,9 @@ const channelBus = new MessageBus()
 const inventory = createInventory(UICanvas, UIContainerStack, UIImage)
 const options = { inventory }
 
+// pull out the sign post's channel in order to send actions to the smart item
+const signPostChannel = createChannel(channelId, signpostRoot, channelBus)
+
 const script1 = new Script1()
 const script2 = new Script2()
 // Builder creates this but causes an error as no arguments expected!
@@ -60,7 +63,7 @@ const script2 = new Script2()
 //script2.init(options)
 script1.init()
 script2.init()
-script1.spawn(signpostRoot, {"text":"Walk this way","fontSize":20}, createChannel(channelId, signpostRoot, channelBus))
+script1.spawn(signpostRoot, {"text":"Walk this way","fontSize":20}, signPostChannel)
 script2.spawn(triggerArea, {"enabled":true,"onEnter":[{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"Hi there!"}}],"onLeave":[{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"Leaving so soon?"}}]}, createChannel(channelId, triggerArea, channelBus))
 
 async function checkTime() {
@@ -85,20 +88,29 @@ async function checkTime() {
   // Update the component directly, however it yields the error caught below
   //
 
-  try {
-    let textComponent = signpostRoot.getComponent(TextShape)
-    textComponent.value = 'WOW!'
-  } catch (error) {
-    // Can not get component "engine.text" from entity "signpostRoot"
-    log('Caught error')
-    log(error.message)
-  }
+  // try {
+  //   let textComponent = signpostRoot.getComponent(TextShape)
+  //   textComponent.value = 'WOW!'
+  // } catch (error) {
+  //   // Can not get component "engine.text" from entity "signpostRoot"
+  //   log('Caught error')
+  //   log(error.message)
+  // }
 
   //
-  // Strategy 2
+  // Strategy 2: SOLUTION
   //
-  // Send message to channelBus, but I'm not sure how to do this.
+  // Send message to channelBus.
   //
+  // Note:
+  //
+  //  - changeText action will broadcast update to all players in scene.
+  //
+  //  - updateText action will only update item for player invoking action in scene
+  //    See '3f3fe65b-c648-44bc-8781-c2a40bc95bb4/src/item.ts' for the associated smart item's action
+  //
+  signPostChannel.sendActions([{"entityName":"signpostRoot","actionId":"changeText","values":{"newText":"WOW!"}}])
+  //signPostChannel.sendActions([{"entityName":"signpostRoot","actionId":"updateText","values":{"newText":"WOW!"}}])
 
   //
   // Strategy 3

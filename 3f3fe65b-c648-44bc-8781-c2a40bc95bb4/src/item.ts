@@ -34,8 +34,16 @@ export default class SignPost implements IScript<Props> {
       })
     )
 
+    // Updates item for all players in scene
     channel.handleAction<ChangeTextType>('changeText', action => {
       text.value = action.values.newText
+    })
+
+    // Updates item only for player invoking action in scene
+    channel.handleAction<ChangeTextType>('updateText', action => {
+      if (action.sender === channel.id) {
+        text.value = action.values.newText
+      }
     })
 
     channel.request<string>('getText', signText => (text.value = signText))
